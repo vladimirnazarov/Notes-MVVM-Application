@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -73,4 +74,8 @@ dependencies {
 
     def nav_version = "2.5.2"
     implementation "androidx.navigation:navigation-compose:$nav_version"
+
+    implementation platform('com.google.firebase:firebase-bom:31.0.2')
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.7'
+    implementation 'com.google.firebase:firebase-database-ktx:20.0.5'
 }
