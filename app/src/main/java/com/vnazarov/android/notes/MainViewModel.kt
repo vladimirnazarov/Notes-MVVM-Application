@@ -3,6 +3,7 @@ package com.vnazarov.android.notes
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
+import com.vnazarov.android.notes.database.firebase.AppFirebaseRepository
 import com.vnazarov.android.notes.database.room.AppRoomDatabase
 import com.vnazarov.android.notes.database.room.repository.RoomRepository
 import com.vnazarov.android.notes.model.Note
@@ -18,39 +19,46 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun initDatabase(type: String, onSuccess: () -> Unit) {
         Log.i("MVVM Log", "Database initialized with type: $type")
-        when(type){
+        when (type) {
             TYPE_ROOM -> {
                 val dao = AppRoomDatabase.getInstance(context = context).getRoomDao()
                 REPOSITORY = RoomRepository(dao)
                 onSuccess()
             }
-        }
-    }
-
-    fun addNote(note: Note, onSuccess: () -> Unit){
-        viewModelScope.launch(Dispatchers.IO){
-            REPOSITORY.create(note = note){
-                viewModelScope.launch(Dispatchers.Main){
-                    onSuccess()
-                }
+            TYPE_FIREBASE -> {
+                REPOSITORY = AppFirebaseRepository()
+                REPOSITORY.connectToDatabase(
+                    { onSuccess() },
+                    { Log.d("Check Data", "Error: $it") }
+                )
             }
         }
     }
 
-    fun updateNote(note: Note, onSuccess: () -> Unit){
-        viewModelScope.launch(Dispatchers.IO){
-            REPOSITORY.update(note = note){
-                viewModelScope.launch(Dispatchers.Main){
-                    onSuccess()
-                }
-            }
-        }
-    }
-
-    fun deleteNote(note: Note, onSuccess: () -> Unit){
+    fun addNote(note: Note, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            REPOSITORY.delete(note = note){
-                viewModelScope.launch(Dispatchers.Main){
+            REPOSITORY.create(note = note) {
+                viewModelScope.launch(Dispatchers.Main) {
+                    onSuccess()
+                }
+            }
+        }
+    }
+
+    fun updateNote(note: Note, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            REPOSITORY.update(note = note) {
+                viewModelScope.launch(Dispatchers.Main) {
+                    onSuccess()
+                }
+            }
+        }
+    }
+
+    fun deleteNote(note: Note, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            REPOSITORY.delete(note = note) {
+                viewModelScope.launch(Dispatchers.Main) {
                     onSuccess()
                 }
             }
