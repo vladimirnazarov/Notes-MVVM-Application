@@ -23,14 +23,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.vnazarov.android.notes.MainViewModel
 import com.vnazarov.android.notes.MainViewModelFactory
 import com.vnazarov.android.notes.model.Note
 import com.vnazarov.android.notes.navigation.NavRoute
 import com.vnazarov.android.notes.ui.theme.NotesTheme
 
+private val mAuth = FirebaseAuth.getInstance()
+private val database = Firebase.database.reference.child(mAuth.currentUser?.uid.toString())
+
 @Composable
 fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
+
     val notes = viewModel.readAllNotes().observeAsState(listOf()).value
 
     Scaffold(floatingActionButton = {
