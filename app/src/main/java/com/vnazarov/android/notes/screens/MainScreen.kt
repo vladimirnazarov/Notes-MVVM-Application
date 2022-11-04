@@ -31,6 +31,10 @@ import com.vnazarov.android.notes.MainViewModelFactory
 import com.vnazarov.android.notes.model.Note
 import com.vnazarov.android.notes.navigation.NavRoute
 import com.vnazarov.android.notes.ui.theme.NotesTheme
+import com.vnazarov.android.notes.utils.Constants.Keys.EMPTY
+import com.vnazarov.android.notes.utils.DB_TYPE
+import com.vnazarov.android.notes.utils.TYPE_FIREBASE
+import com.vnazarov.android.notes.utils.TYPE_ROOM
 
 private val mAuth = FirebaseAuth.getInstance()
 private val database = Firebase.database.reference.child(mAuth.currentUser?.uid.toString())
@@ -64,11 +68,18 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
 
 @Composable
 fun NoteItem(note: Note, navController: NavHostController) {
+
+    val noteID = when(DB_TYPE){
+        TYPE_FIREBASE -> note.firebaseID
+        TYPE_ROOM -> note.id
+        else -> EMPTY
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 24.dp)
-            .clickable { navController.navigate(NavRoute.Note.route + "/${note.id}") },
+            .clickable { navController.navigate(NavRoute.Note.route + "/$noteID") },
         elevation = 6.dp
     )
     {
