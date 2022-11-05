@@ -24,4 +24,6 @@ class RoomRepository(private val noteRoomDao: NoteRoomDao) : DatabaseRepository 
         noteRoomDao.deleteNote(note = note)
         onSuccess()
     }
+
+    override fun signOut() {}
 }
